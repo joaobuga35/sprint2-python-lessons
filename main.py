@@ -1,24 +1,147 @@
-class Movie:
-    def __init__(self, name, duration) -> None:
+class Villager:
+    def __init__(self, name, health=50, defense=0, attack=0, is_alive=True) -> None:
         self.name = name
-        self.duration = duration
-        pass
+        self.health = health
+        self.defense = defense
+        self.attack = attack
+        self.is_alive = is_alive
 
-    def __str__(self):
-        return f"Filme: {self.name}"
-    
-    def __len__(self):
-        return self.duration
-    
-    def numero_de_exibicoes(self, exibicoes):
-        self.exibicoes = exibicoes
+    def check_health(self, incoming_attack_value: int):
+        if incoming_attack_value > self.defense:
+            self.health = incoming_attack_value - self.defense
+        if self.health <= 0:
+            self.is_alive = False
+            self.health = 0
+            return (False, "Target is dead!")
+        return self.health
 
-        return self.exibicoes
-
-
-John = Movie("John Wick", 115)
-
-print(John.name)
-print(John.duration)
+    def normal_attack(self, target):
+        return self.check_health(target, self.attack)
 
 
+class Mage(Villager):
+    def __init__(self, name) -> None:
+        super().__init__(name)
+        self.attack = 10
+        self.mana = 100
+
+    def fire_ball(self, target):
+        mana_spend = 20
+
+        if self.mana < mana_spend:
+            return (False, "Not enough mana!")
+
+        self.mana -= mana_spend
+        damage = self.attack + mana_spend
+        return target.check_health(damage)
+
+
+if __name__ == "__main__":
+    villager = Villager("Villager")
+    mage = Mage("Mage")
+
+    print(
+        "*" * 50,
+        "Esperado: {'name': 'Villager', 'health': 50, 'defense': 0, 'attack': 0, 'is_alive': True}",
+        f"Resultado: {vars(villager)}",
+        "*" * 50,
+        sep="\n",
+    )
+
+    print(
+        "*" * 50,
+        "Esperado: {'name': 'Mage', 'health': 50, 'defense': 0, 'attack': 10, 'is_alive': True, 'mana': 100}",
+        f"Resultado: {vars(mage)}",
+        "*" * 50,
+        sep="\n",
+    )
+
+    battle_result = mage.fire_ball(villager)
+
+    print("*" * 50, "Esperado: 20", f"Resultado: {battle_result}", "*" * 50, sep="\n")
+
+    print(
+        "*" * 50,
+        "Esperado: {'name': 'Villager', 'health': 20, 'defense': 0, 'attack': 0, 'is_alive': True}",
+        f"Resultado: {vars(villager)}",
+        "*" * 50,
+        sep="\n",
+    )
+
+    print(
+        "*" * 50,
+        "Esperado: {'name': 'Mage', 'health': 50, 'defense': 0, 'attack': 10, 'is_alive': True, 'mana': 80}",
+        f"Resultado: {vars(mage)}",
+        "*" * 50,
+        sep="\n",
+    )
+
+    battle_result = mage.normal_attack(villager)
+
+    print("*" * 50, "Esperado: 10", f"Resultado: {battle_result}", "*" * 50, sep="\n")
+
+    print(
+        "*" * 50,
+        "Esperado: {'name': 'Villager', 'health': 10, 'defense': 0, 'attack': 0, 'is_alive': True}",
+        f"Resultado: {vars(villager)}",
+        "*" * 50,
+        sep="\n",
+    )
+
+    print(
+        "*" * 50,
+        "Esperado: {'name': 'Mage', 'health': 50, 'defense': 0, 'attack': 10, 'is_alive': True, 'mana': 80}",
+        f"Resultado: {vars(mage)}",
+        "*" * 50,
+        sep="\n",
+    )
+
+    battle_result = mage.fire_ball(villager)
+
+    print(
+        "*" * 50,
+        f"Esperado: {(False, 'Target is dead!')}",
+        f"Resultado: {battle_result}",
+        "*" * 50,
+        sep="\n",
+    )
+
+    print(
+        "*" * 50,
+        "Esperado: {'name': 'Villager', 'health': 0, 'defense': 0, 'attack': 0, 'is_alive': False}",
+        f"Resultado: {vars(villager)}",
+        "*" * 50,
+        sep="\n",
+    )
+
+    print(
+        "*" * 50,
+        "Esperado: {'name': 'Mage', 'health': 50, 'defense': 0, 'attack': 10, 'is_alive': True, 'mana': 60}",
+        f"Resultado: {vars(mage)}",
+        "*" * 50,
+        sep="\n",
+    )
+
+    battle_result = mage.fire_ball(villager)
+
+    print(
+        "*" * 50,
+        f"Esperado: {(False, 'Target is dead!')}",
+        f"Resultado: {battle_result}",
+        "*" * 50,
+        sep="\n",
+    )
+
+    print("*" * 50, f"Esperado: 40", f"Resultado: {mage.mana}", "*" * 50, sep="\n")
+
+    battle_result = mage.fire_ball(villager)
+    battle_result = mage.fire_ball(villager)
+    battle_result = mage.fire_ball(villager)
+
+    print(
+        "*" * 50,
+        f"Esperado: {(False, 'Not enough mana!')}",
+        f"Resultado: {battle_result}",
+        "*" * 50,
+        sep="\n",
+    )
